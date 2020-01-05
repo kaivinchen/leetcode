@@ -1,0 +1,63 @@
+class Solution(object):
+    def findMedianSortedArrays(self, nums1, nums2):
+        """
+        :type nums1: List[int]
+        :type nums2: List[int]
+        :rtype: float
+        """
+        len1 = len(nums1)
+        len2 = len(nums2)
+        flag = 0 #默认升序
+        if len1 > 0 and nums1[0] > nums1[len1-1]:
+            flag = 1
+        if len2 > 0 and nums2[0] > nums2[len2-1]:
+            flag = 1
+        len_all = len1 + len2
+        k = len_all/2
+        if len_all%2 == 1: #总长度为奇数时
+            k=k+1
+            return self.findKArrays(nums1,nums2,k,flag)
+        else:
+            tmp = k+1
+            return float(self.findKArrays(nums1,nums2,k,flag) + self.findKArrays(nums1,nums2,tmp,flag))/2
+
+    def findKArrays(self,nums1,nums2,k,flag):
+        len1 = len(nums1)
+        len2 = len(nums2)
+        if len1 == 0 : 
+            return nums2[k-1]
+        if len2 == 0:
+            return nums1[k-1]
+        if k == 1:
+            if flag == 0: #升序
+                if nums1[0] < nums2[0]:
+                    return nums1[0]
+                else:
+                    return nums2[0]
+            else:
+                if nums1[0] > nums2[0]:
+                    return nums1[0]
+                else :
+                    return nums2[0]
+        tmp = k/2
+        index1 = tmp - 1
+        index2 = tmp - 1
+        if index1 > len1-1:
+            index1 = len1-1
+        if index2 > len2-1:
+            index2 = len2-1
+        if flag == 0: #升序
+            if nums1[index1] < nums2[index2]:
+                nums1 = nums1[index1+1:len1]
+                k = k-(index1+1)
+            else :
+                nums2 = nums2[index2+1:len2]
+                k = k-(index2+1)
+        else: #降序
+            if nums1[index1] > nums2[index2]:
+                nums1 = nums1[index1+1:len1]
+                k = k-(index1+1)
+            else:
+                nums2 = nums2[index2+1:len2]
+                k = k-(index2+1)
+        return self.findKArrays(nums1,nums2,k,flag)
